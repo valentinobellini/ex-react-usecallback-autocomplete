@@ -7,6 +7,8 @@
 // Se l'utente cancella il testo, la tendina scompare.
 // Obiettivo: Mostrare suggerimenti dinamici in base alla ricerca dell'utente.
 
+
+
 // import { useState, useEffect } from 'react';
 
 
@@ -16,18 +18,26 @@
 //     const [search, setSearch] = useState('')
 //     const [suggestions, setSuggestions] = useState([])
 
-//     useEffect(() => {
 
-//         if (!search) {
-//             setSuggestions([]);
-//             return;
-//         }
+// const fetchProducts = async (search) => {
+//     if (!search) {
+//         setSuggestions([]);
+//         return;
+//     }
+//     try {
+//         const res = await fetch(`http://localhost:3333/products?search=${search}`)
+//         const data = await res.json();
+//         setSuggestions(data)
+//     } catch (err) {
+//         console.error(err)
+//     }
+// }
 
-//         fetch(`http://localhost:3333/products?search=${search}`)
-//             .then(res => res.json())
-//             .then(data => setSuggestions(data))
-//             .catch(err => console.error(err))
-//     }, [search])
+
+
+// useEffect(() => {
+//     fetchProducts(search);
+// }, [search])
 
 
 //     return (
@@ -84,32 +94,35 @@
 //     const [search, setSearch] = useState('')
 //     const [suggestions, setSuggestions] = useState([])
 
+// const fetchProducts = async (search) => {
+//     if (!search) {
+//         setSuggestions([]);
+//         return;
+//     }
+//     try {
+//         const res = await fetch(`http://localhost:3333/products?search=${search}`)
+//         const data = await res.json();
+//         setSuggestions(data)
+//         console.log(data);
 
-//     const debouncedFetch = useCallback(
-//         debounce((search) => {
-//             console.log(search);
+//     } catch (err) {
+//         console.error(err)
+//     }
+// }
 
 
-//             fetch(`http://localhost:3333/products?search=${search}`)
-//                 .then(res => res.json())
-//                 .then(data => setSuggestions(data))
-//                 .catch(err => console.error(err))
-//         }, 1000),
-//         []
-//     )
+// const debouncedFetch = useCallback(
+//     debounce(fetchProducts, 500),
+//     []
+// )
 
 
 
 
-//     useEffect(() => {
+// useEffect(() => {
 
-//         if (!search) {
-//             setSuggestions([]);
-//             return;
-//         }
-
-//         debouncedFetch(search);
-//     }, [search, debouncedFetch])
+//     debouncedFetch(search);
+// }, [search])
 
 
 //     return (
@@ -164,6 +177,11 @@ function debounce(callback, delay) {
 
 export default function SearchAutocomplete() {
 
+    const [search, setSearch] = useState('')
+    const [suggestions, setSuggestions] = useState([])
+    const [selectedProduct, setSelectedProduct] = useState(null)
+
+
     function handleSelect(id) {
         setSuggestions([]);
         setSearch('')
@@ -183,37 +201,33 @@ export default function SearchAutocomplete() {
 
 
 
-    const [search, setSearch] = useState('')
-    const [suggestions, setSuggestions] = useState([])
-    const [selectedProduct, setSelectedProduct] = useState(null)
-
-
-    const debouncedFetch = useCallback(
-        debounce((search) => {
-            console.log(search);
-
-
-            fetch(`http://localhost:3333/products?search=${search}`)
-                .then(res => res.json())
-                .then(data => setSuggestions(data))
-                .catch(err => console.error(err))
-        }, 1000),
-        []
-    )
-
-
-
-
-    useEffect(() => {
-
+    const fetchProducts = async (search) => {
         if (!search) {
             setSuggestions([]);
             return;
         }
+        try {
+            const res = await fetch(`http://localhost:3333/products?search=${search}`)
+            const data = await res.json();
+            setSuggestions(data)
+            console.log(data);
+
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+
+    const debouncedFetch = useCallback(
+        debounce(fetchProducts, 500),
+        []
+    )
+
+
+    useEffect(() => {
 
         debouncedFetch(search);
-    }, [search, debouncedFetch])
-
+    }, [search])
 
     return (
         <>
